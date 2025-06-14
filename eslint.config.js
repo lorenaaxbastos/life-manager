@@ -1,8 +1,12 @@
-import { FlatCompat } from "@eslint/eslintrc";
+const { FlatCompat } = require("@eslint/eslintrc");
 
-const compat = new FlatCompat();
+const compat = new FlatCompat({ recommendedConfig: true });
 
-export default [
+module.exports = [
+  {
+    root: true,
+    ignores: ["dist", "node_modules"],
+  },
   ...compat.extends(
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
@@ -24,9 +28,5 @@ export default [
       "prettier/prettier": ["error"],
       "react/react-in-jsx-scope": "off",
     },
-    ignores: ["dist", "node_modules"],
-  },
-  {
-    root: true,
   },
 ];
