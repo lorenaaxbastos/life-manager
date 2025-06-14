@@ -6,27 +6,21 @@ on:
       - main
 
 jobs:
-  lint-and-test:
+  format-lint-test:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v3
 
-      - name: Setup Node
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: 'pnpm'
+          node-version: '20'
 
       - name: Install pnpm
         run: npm install -g pnpm
 
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install
 
-      - name: Run lint
-        run: pnpm lint
-
-      - name: Run tests
-        run: pnpm test
+      - name: Run lint and tests
+        run: pnpm run ci
