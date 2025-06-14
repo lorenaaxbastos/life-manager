@@ -1,20 +1,47 @@
-name: Auto Label PRs
+name: Auto Label PRs by Commit Type
 
 on:
   pull_request:
-    types: [opened]
+    types: [ opened, synchronize, reopened ]
 
 jobs:
-  add-label:
+  label:
     runs-on: ubuntu-latest
     steps:
-      - name: Label by branch prefix
+      - uses: actions/checkout@v3
+
+      - name: Get commits from PR
+        id: commits
+        run: |
+          echo "COMMIT_TYPES="
+          types=$(git log origin/main..HEAD --pretty=format:%s | grep -Eo '^(feat|fix|chore|docs|refactor)' | sort | uniq)
+          echo "Found commit types: $types"
+          echo "COMMIT_TYPES=$types" >> $GITHUB_OUTPUT
+
+      - name: Determine label to apply
+        id: label
+        run: |
+          types="${{ steps.commits.outputs.COMMIT_TYPES }}"
+          label=""
+
+          if echo "$types" | grep -q "feat"; then
+            label="feat"
+          elif echo "$types" | grep -q "fix"; then
+            label="fix"
+          elif echo "$types" | grep -q "chore"; then
+            label="chore"
+          elif echo "$types" | grep -q "docs"; then
+            label="docs"
+          elif echo "$types" | grep -q "refactor"; then
+            label="refactor"
+          fi
+
+          echo "Applying label: $label"
+          echo "LABEL=$label" >> $GITHUB_OUTPUT
+
+      - name: Apply label
         uses: actions-ecosystem/action-add-labels@v1
+        if: steps.label.outputs.LABEL != ''
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          labels: |
-            feat: ^feat/
-            fix: ^fix/
-            chore: ^chore/
-            docs: ^docs/
-            refactor: ^refactor/
+          labels: ${{ steps.label.outputs.LABEL }}
