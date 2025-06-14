@@ -1,0 +1,18 @@
+# node and packages
+node_modules
+dist
+build
+.pnp.*
+.pnpm-debug.log
+pnpm-lock.yaml
+
+# system/editor
+.DS_Store
+.idea/
+
+# env/secrets
+.env*
+*.log
+
+# output
+*.tsbuildinfo
