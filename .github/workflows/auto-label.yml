@@ -20,30 +20,17 @@ jobs:
             git fetch --prune --tags origin +refs/heads/*:refs/remotes/origin/*
           fi
 
-      - name: Get commit types from PR
+      - name: Get commits from PR
         id: commits
         run: |
-          types=$(git log origin/main..HEAD --pretty=format:%s | grep -Eo '^(feat|fix|chore|docs|refactor)' | sort | uniq | tr '\n' ' ')
+          types=$(git log origin/main..HEAD --pretty=format:%s | grep -Eo '^(feat|fix|chore|docs|refactor)' | sort -u)
           echo "Found commit types: $types"
-          echo "COMMIT_TYPES=$types" >> $GITHUB_OUTPUT
+          labels=$(printf '%s\n' $types | jq -R . | jq -s .)
+          echo "LABELS=$labels" >> $GITHUB_OUTPUT
 
-      - name: Determine labels to apply
-        id: label
-        run: |
-          types="${{ steps.commits.outputs.COMMIT_TYPES }}"
-          labels=()
-
-          for t in $types; do
-            labels+=("\"$t\"")
-          done
-
-          labels_json="[${labels[*]}]"
-          echo "Applying labels: $labels_json"
-          echo "LABELS=$labels_json" >> $GITHUB_OUTPUT
-
-      - name: Apply label(s)
+      - name: Apply labels
         uses: actions-ecosystem/action-add-labels@v1
-        if: steps.label.outputs.LABELS != ''
+        if: steps.commits.outputs.LABELS != '[]' && steps.commits.outputs.LABELS != ''
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          labels: ${{ steps.label.outputs.LABELS }}
+          labels: ${{ steps.commits.outputs.LABELS }}
