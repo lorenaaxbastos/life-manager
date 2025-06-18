@@ -4,23 +4,56 @@ on:
   pull_request:
     branches:
       - main
+  push:
+    branches:
+      - main
 
 jobs:
   format-lint-test:
+    name: Format, Lint and Test
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        ports:
+          - 5433:5432
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: admin
+          POSTGRES_DB: lifemanager_test
+        options: >-
+          --health-cmd="pg_isready"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 8
+
+      - name: Install dependencies
+        run: pnpm install --recursive --no-frozen-lockfile
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: "20"
+          cache: "pnpm"
 
-      - name: Install pnpm
-        run: npm install -g pnpm
+      - name: Set DATABASE_URL env var
+        run: echo "DATABASE_URL=postgresql://postgres:admin@localhost:5433/lifemanager_test" >> $GITHUB_ENV
 
-      - name: Install dependencies
-        run: pnpm install
+      - name: 🔍 Format
+        run: pnpm format
 
-      - name: Run lint and tests
-        run: pnpm run ci
+      - name: 🧪 Lint
+        run: pnpm lint
+
+      - name: ✅ Test
+        run: pnpm test
