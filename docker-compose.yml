@@ -1,0 +1,19 @@
+services:
+  postgres:
+    image: postgres
+    container_name: life-manager-db
+    restart: unless-stopped
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: admin
+      # noinspection SpellCheckingInspection
+      POSTGRES_DB: lifemanager
+    # noinspection SpellCheckingInspection
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  # noinspection SpellCheckingInspection
+  pgdata:
