@@ -31,9 +31,10 @@ jobs:
           echo "$labels" >> $GITHUB_OUTPUT
           echo "EOF" >> $GITHUB_OUTPUT
 
-      - name: Apply labels
+      - name: Apply label
         uses: actions-ecosystem/action-add-labels@v1
-        if: steps.commits.outputs.LABELS != '[]' && steps.commits.outputs.LABELS != ''
+        if: steps.label.outputs.LABELS != ''
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          labels: ${{ steps.commits.outputs.LABELS }}
+          labels: ${{ steps.label.outputs.LABELS }}
+
