@@ -4,11 +4,9 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### 0.1.4 (2025-06-18)
 
-
 ### 📚 Documentation
 
 * create initial read me file ([ce15444](https://github.com/lorenaaxbastos/life-manager/commit/ce154440a44811f6fa4610572957a9c9c07fd4d2))
-
 
 ### 🧹 Chores
 
@@ -20,11 +18,9 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### 0.1.3 (2025-06-18)
 
-
 ### 📚 Documentation
 
 * create initial read me file ([ce15444](https://github.com/lorenaaxbastos/life-manager/commit/ce154440a44811f6fa4610572957a9c9c07fd4d2))
-
 
 ### 🧹 Chores
 
