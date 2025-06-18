@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "ts-node-dev --respawn --transpile-only src/server.ts",
     "seed": "ts-node prisma/seed.ts",
-    "test": "dotenv -e .env.test -- jest"
+    "test": "jest"
   },
   "keywords": [],
   "author": "",
