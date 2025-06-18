@@ -9,7 +9,7 @@ This project prioritizes scalability, personalization, and long-term usability.
 ## ⚙️ Tech Stack
 
 | Layer    | Tech                             |
-|----------|----------------------------------|
+| -------- | -------------------------------- |
 | Frontend | React + Vite + Styled Components |
 | Backend  | Node.js + Fastify                |
 | Database | PostgreSQL (via Docker)          |
