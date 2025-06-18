@@ -2,7 +2,7 @@ name: Auto Label PRs by Commit Type
 
 on:
   pull_request:
-    types: [ opened, synchronize, reopened ]
+    types: [opened, synchronize, reopened]
 
 jobs:
   label:
@@ -37,4 +37,3 @@ jobs:
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           labels: ${{ steps.label.outputs.LABELS }}
-
