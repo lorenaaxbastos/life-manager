@@ -2,46 +2,46 @@ name: Auto Label PRs by Commit Type
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened]
+    types: [ opened, synchronize, reopened ]
 
 jobs:
   label:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
-      - name: Get commits from PR
+      - name: Fetch full git history
+        run: git fetch --prune --unshallow --tags origin +refs/heads/*:refs/remotes/origin/*
+
+      - name: Get commit types from PR
         id: commits
         run: |
-          echo "COMMIT_TYPES="
-          types=$(git log origin/main..HEAD --pretty=format:%s | grep -Eo '^(feat|fix|chore|docs|refactor)' | sort | uniq)
+          types=$(git log origin/main..HEAD --pretty=format:%s | grep -Eo '^(feat|fix|chore|docs|refactor)' | sort | uniq | tr '\n' ' ')
           echo "Found commit types: $types"
           echo "COMMIT_TYPES=$types" >> $GITHUB_OUTPUT
 
-      - name: Determine label to apply
-        id: label
+      - name: Determine labels to apply
+        id: labels
         run: |
           types="${{ steps.commits.outputs.COMMIT_TYPES }}"
-          label=""
+          labels=""
 
-          if echo "$types" | grep -q "feat"; then
-            label="feat"
-          elif echo "$types" | grep -q "fix"; then
-            label="fix"
-          elif echo "$types" | grep -q "chore"; then
-            label="chore"
-          elif echo "$types" | grep -q "docs"; then
-            label="docs"
-          elif echo "$types" | grep -q "refactor"; then
-            label="refactor"
-          fi
+          for type in feat fix chore docs refactor; do
+            if echo "$types" | grep -q "$type"; then
+              labels="$labels,$type"
+            fi
+          done
 
-          echo "Applying label: $label"
-          echo "LABEL=$label" >> $GITHUB_OUTPUT
+          # Remove leading comma
+          labels="${labels#,}"
+          echo "Applying labels: $labels"
+          echo "LABELS=$labels" >> $GITHUB_OUTPUT
 
-      - name: Apply label
+      - name: Apply labels
+        if: steps.labels.outputs.LABELS != ''
         uses: actions-ecosystem/action-add-labels@v1
-        if: steps.label.outputs.LABEL != ''
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          labels: ${{ steps.label.outputs.LABEL }}
+          labels: ${{ steps.labels.outputs.LABELS }}
