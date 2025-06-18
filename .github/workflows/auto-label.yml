@@ -26,7 +26,10 @@ jobs:
           types=$(git log origin/main..HEAD --pretty=format:%s | grep -Eo '^(feat|fix|chore|docs|refactor)' | sort -u)
           echo "Found commit types: $types"
           labels=$(printf '%s\n' $types | jq -R . | jq -s .)
-          echo "LABELS=$labels" >> $GITHUB_OUTPUT
+
+          echo "LABELS<<EOF" >> $GITHUB_OUTPUT
+          echo "$labels" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Apply labels
         uses: actions-ecosystem/action-add-labels@v1
